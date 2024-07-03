@@ -1,5 +1,6 @@
 package ru.practicum.dinner;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -28,38 +29,50 @@ public class Main {
         }
     }
 
-    private static void printMenu() {
+    private static void printMenu() { //метод печатает меню
         System.out.println("Выберите команду:");
         System.out.println("1 - Добавить новое блюдо");
         System.out.println("2 - Сгенерировать комбинации блюд");
         System.out.println("3 - Выход");
     }
 
-    private static void addNewDish() {
+    private static void addNewDish() { //метод добавляет блюдо в меню
         System.out.println("Введите тип блюда:");
         String dishType = scanner.nextLine();
         System.out.println("Введите название блюда:");
         String dishName = scanner.nextLine();
-
-        // добавьте новое блюдо
+        dc.addTypes(dishType, dishName);
     }
 
-    private static void generateDishCombo() {
+    private static void generateDishCombo() { //метод для сбора параметров комбо и дальнейшей реализации комбо
         System.out.println("Начинаем конструировать обед...");
 
-        System.out.println("Введите количество наборов, которые нужно сгенерировать:");
-        int numberOfCombos = scanner.nextInt();
-        scanner.nextLine();
+        if (dc.checkMenu()) { //если меню пустое, то не стоит и начинать
+            System.out.println("Извините, список меню пуст. Добавьте новое блюдо и попробуйте снова.");
+        } else {
+            System.out.println("Укажите какие типы блюд вы бы хотели видет в комбо.");
+            System.out.println("Доступны следующие типы:");
+            dc.printTypes(); //тихонечно печатает по-котовски что доступно
 
-        System.out.println("Вводите типы блюда, разделяя символом переноса строки (enter). Для завершения ввода введите пустую строку");
-        String nextItem = scanner.nextLine();
+            ArrayList<String> typesForCombo = new ArrayList<>(); //создал список ключей, по которым будем генерировать
+            String typeForCombo = scanner.nextLine();
 
-        //реализуйте ввод типов блюд
-        while (!nextItem.isEmpty()) {
+            while (!typeForCombo.isEmpty()) {
+                if (!dc.checkTypeForCombo(typeForCombo)) {
+                    System.out.println("Введенный тип блюда отсутствует в меню, пожалуйста введите из списка:");
+                    dc.printTypes();
+                    typeForCombo = scanner.nextLine();
+                } else {
+                    typesForCombo.add(typeForCombo);
+                    System.out.println(typeForCombo + " добавлено в комбо. Добавьте еще тип блюда, либо нажмите Enter.");
+                    typeForCombo = scanner.nextLine();
+                }
+            }
 
+            System.out.println("Введите желаемое количество вариантов комбо:");
+            int numberOfCombos = scanner.nextInt(); //переменная, отвечает за количество комбинаций (итераций)
+
+            dc.combination(numberOfCombos, typesForCombo); //выше был сбор информации, сейчас реализация
         }
-
-        // сгенерируйте комбинации блюд и выведите на экран
-
     }
 }
